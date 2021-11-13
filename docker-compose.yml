@@ -14,5 +14,5 @@ services:
       - 8081:8080
       - 5005:5005
     volumes:
-      - ./target/keycloak-custom-attribute-idp-linking-1.0.0-SNAPSHOT.jar:/opt/jboss/keycloak/standalone/deployments/keycloak-custom-attribute-idp-linking-1.0.0-SNAPSHOT.jar
+      - ./target/keycloak-custom-attribute-idp-linking-1.0.0.jar:/opt/jboss/keycloak/standalone/deployments/keycloak-custom-attribute-idp-linking-1.0.0.jar
       - ./keycloak/realm-export.json:/tmp/realm-export.json

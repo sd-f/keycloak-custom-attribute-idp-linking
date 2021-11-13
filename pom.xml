@@ -4,7 +4,7 @@
 
 
     <groupId>foundation.softwaredesign</groupId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <artifactId>keycloak-custom-attribute-idp-linking</artifactId>
     <name>keycloak-custom-attribute-idp-linking</name>
