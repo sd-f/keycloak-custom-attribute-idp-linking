@@ -1,0 +1,6 @@
+.idea/
+*.iml
+pom.xml.versionsBackup
+target/
+.env
+keycloak/realm-export.json

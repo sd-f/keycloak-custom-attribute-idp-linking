@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:15.0.2
+    container_name: keycloak
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      DEBUG: "true"
+      DEBUG_PORT: "*:5005"
+      KEYCLOAK_IMPORT: "/tmp/realm-export.json"
+    ports:
+      - 8081:8080
+      - 5005:5005
+    volumes:
+      - ./target/keycloak-custom-attribute-idp-linking-1.0.0-SNAPSHOT.jar:/opt/jboss/keycloak/standalone/deployments/keycloak-custom-attribute-idp-linking-1.0.0-SNAPSHOT.jar
+      - ./keycloak/realm-export.json:/tmp/realm-export.json
