@@ -92,6 +92,15 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub sd-f Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/sd-f/keycloak-custom-attribute-idp-linking</url>
+        </repository>
+    </distributionManagement>
+
+
 </project>
 
 
