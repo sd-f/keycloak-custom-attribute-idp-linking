@@ -1,5 +1,7 @@
 # Keycloak Custom Attribute IDP Linking
 
+![example workflow](https://github.com/sd-f/keycloak-custom-attribute-idp-linking/actions/workflows/maven-publish/badge.svg)
+
 Keycloak default authenticator flows for external identity provider brokering only match  existing users only on username and 
 password attributes. If you want to lookup user with different attributes you can use this extension. If you for example 
 get attribute `eid` from your external provider and want your local user, for example from ldap storage provider matched where 
