@@ -18,6 +18,7 @@ public class CustomAttributeIdpLinkingAuthenticatorFactory implements Authentica
   public static final String PROVIDER_ID = "custom-attribute-idp-linking";
   public static final String CONFIG_IDP_ATTRIBUTE = "caila-idp-attribute";
   public static final String CONFIG_LOOKUP_ATTRIBUTE = "caila-lookup-attribute";
+  public static final String CONFIG_FAIL_ON_NO_MATCH_ATTRIBUTE = "caila-fail-on-no-match";
 
   private static final Logger log = Logger.getLogger(CustomAttributeIdpLinkingAuthenticatorFactory.class);
 
@@ -85,6 +86,12 @@ public class CustomAttributeIdpLinkingAuthenticatorFactory implements Authentica
         .label("Lookup Attribute")
         .helpText("User attribute used to compare to identity provider attribute.")
         .defaultValue("eid")
+        .add()
+        .property().name(CONFIG_FAIL_ON_NO_MATCH_ATTRIBUTE)
+        .type(ProviderConfigProperty.BOOLEAN_TYPE)
+        .label("Fail on no match")
+        .helpText("User attribute make linker fail if there is no matching user.")
+        .defaultValue(false)
         .add()
         .build();
   }

@@ -2,29 +2,54 @@ package foundation.softwaredesign.keycloak.authenticators;
 
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
-import org.keycloak.authentication.authenticators.broker.IdpCreateUserIfUniqueAuthenticator;
-import org.keycloak.authentication.authenticators.broker.util.ExistingUserInfo;
+import org.keycloak.authentication.AuthenticationFlowError;
+import org.keycloak.authentication.AuthenticationFlowException;
+import org.keycloak.authentication.authenticators.broker.IdpAutoLinkAuthenticator;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
+import org.keycloak.events.Errors;
+import org.keycloak.models.AuthenticatorConfigModel;
+import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.services.messages.Messages;
 
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CustomAttributeIdpLinkingAuthenticator extends IdpCreateUserIfUniqueAuthenticator {
+public class CustomAttributeIdpLinkingAuthenticator extends IdpAutoLinkAuthenticator {
 
   private static final Logger log = Logger.getLogger(CustomAttributeIdpLinkingAuthenticator.class);
 
+  @Override
+  protected void authenticateImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx,
+      BrokeredIdentityContext brokerContext) {
 
-  @Override protected ExistingUserInfo checkExistingUser(AuthenticationFlowContext context, String username,
-      SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
-    ExistingUserInfo existingUserInfo = super.checkExistingUser(context, username, serializedCtx, brokerContext);
+    AuthenticatorConfigModel config = validateConfig(context);
+    String failOnNoMatch = config.getConfig()
+        .get(CustomAttributeIdpLinkingAuthenticatorFactory.CONFIG_FAIL_ON_NO_MATCH_ATTRIBUTE);
+    UserModel existingUser = findMatchingUser(context, brokerContext, config);
 
-    if (existingUserInfo != null) {
-      return existingUserInfo;
+    if (existingUser != null) {
+      log.debugf(
+          "User '%s' is set to authentication context when link with identity provider '%s' . Identity provider username is '%s' ",
+          existingUser.getUsername(),
+          brokerContext.getIdpConfig().getAlias(), brokerContext.getUsername());
+
+      context.setUser(existingUser);
+      context.success();
+    } else {
+      if (failOnNoMatch.equals("true")) {
+        sendFailureChallenge(context, Response.Status.BAD_REQUEST, Errors.USER_NOT_FOUND, Messages.IDENTITY_PROVIDER_UNEXPECTED_ERROR, AuthenticationFlowError.ACCESS_DENIED);
+      }
+      context.attempted();
     }
 
+
+  }
+
+  private AuthenticatorConfigModel validateConfig(AuthenticationFlowContext context) {
     if (context.getAuthenticatorConfig() == null) {
       log.warn("Config must not be empty.");
       return null;
@@ -33,8 +58,14 @@ public class CustomAttributeIdpLinkingAuthenticator extends IdpCreateUserIfUniqu
       log.warn("Config must not be empty.");
       return null;
     }
+    return context.getAuthenticatorConfig();
+  }
 
-    String idpAttribute = context.getAuthenticatorConfig().getConfig()
+  protected UserModel findMatchingUser(AuthenticationFlowContext context, BrokeredIdentityContext brokerContext,
+      AuthenticatorConfigModel config) {
+
+
+    String idpAttribute = config.getConfig()
         .get(CustomAttributeIdpLinkingAuthenticatorFactory.CONFIG_IDP_ATTRIBUTE);
 
     if (idpAttribute == null) {
@@ -47,7 +78,7 @@ public class CustomAttributeIdpLinkingAuthenticator extends IdpCreateUserIfUniqu
       return null;
     }
 
-    String attribute = context.getAuthenticatorConfig().getConfig()
+    String attribute = config.getConfig()
         .get(CustomAttributeIdpLinkingAuthenticatorFactory.CONFIG_LOOKUP_ATTRIBUTE);
 
     if (attribute == null) {
@@ -83,12 +114,17 @@ public class CustomAttributeIdpLinkingAuthenticator extends IdpCreateUserIfUniqu
           .findFirst();
 
       if (user.isPresent()) {
-        return new ExistingUserInfo(user.get().getId(), UserModel.USERNAME, user.get().getUsername());
+        return user.get();
       } else {
         log.debug("No user found with \"" + attribute + "\" == " + value);
       }
     }
     return null;
   }
+
+  @Override
+  protected void actionImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
+  }
+
 
 }
