@@ -14,9 +14,24 @@ links in keycloak and your users will not get created twice in your keycloak dat
 
 ## Installation
 
-Tested on Keycloak 15.0.2.
+Tested on Keycloak 15.0.2 and Keycloak 17.x.x.
 
-### Install Plugin/Extension
+### Install Plugin on *Keycloak>=17.0.0*
+
+After Packaging the project, deploy the `keycloak-custom-attribute-idp-linking-2.0.1.jar` to `/opt/keycloak/providers` and rebuild keycloak to bring this provider in.
+
+>>
+**Auto rebuild while starting:**
+```shell
+/opt/keycloak/bin/kc.sh start --auto-build
+```
+
+**Build only**
+```shell
+/opt/keycloak/bin/kc.sh build
+```
+>
+### Install Plugin/Extension on *Keycloak<=15.0.2*
 
 Copy or mount plugin in your keycloak installation depending on your environment (k8s, compose, gke). 
 For example in `/opt/jboss/keycloak/standalone/deployments/` (see file docker-compose.yml). You should see something like 
