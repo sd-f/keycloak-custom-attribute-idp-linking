@@ -27,7 +27,7 @@ Attach remote jvm debug session on port 5005 (default).
 
 ## Installation
 
-Tested on Keycloak `15.0.2` and Keycloak `17.0.0`.
+Tested on Keycloak `15.0.2`, `17.0.0`, `22.0.3.
 
 ### Keycloak >= v17.0.0
 

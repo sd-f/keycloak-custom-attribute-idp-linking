@@ -1,19 +1,17 @@
 package foundation.softwaredesign.keycloak.authenticators;
 
+import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
-import org.keycloak.authentication.AuthenticationFlowException;
 import org.keycloak.authentication.authenticators.broker.IdpAutoLinkAuthenticator;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.events.Errors;
 import org.keycloak.models.AuthenticatorConfigModel;
-import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.services.messages.Messages;
 
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,11 +39,11 @@ public class CustomAttributeIdpLinkingAuthenticator extends IdpAutoLinkAuthentic
       context.success();
     } else {
       if (failOnNoMatch.equals("true")) {
-        sendFailureChallenge(context, Response.Status.BAD_REQUEST, Errors.USER_NOT_FOUND, Messages.IDENTITY_PROVIDER_UNEXPECTED_ERROR, AuthenticationFlowError.ACCESS_DENIED);
+        sendFailureChallenge(context, Response.Status.BAD_REQUEST, Errors.USER_NOT_FOUND,
+            Messages.IDENTITY_PROVIDER_UNEXPECTED_ERROR, AuthenticationFlowError.ACCESS_DENIED);
       }
       context.attempted();
     }
-
 
   }
 
@@ -63,7 +61,6 @@ public class CustomAttributeIdpLinkingAuthenticator extends IdpAutoLinkAuthentic
 
   protected UserModel findMatchingUser(AuthenticationFlowContext context, BrokeredIdentityContext brokerContext,
       AuthenticatorConfigModel config) {
-
 
     String idpAttribute = config.getConfig()
         .get(CustomAttributeIdpLinkingAuthenticatorFactory.CONFIG_IDP_ATTRIBUTE);
@@ -123,8 +120,8 @@ public class CustomAttributeIdpLinkingAuthenticator extends IdpAutoLinkAuthentic
   }
 
   @Override
-  protected void actionImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx, BrokeredIdentityContext brokerContext) {
+  protected void actionImpl(AuthenticationFlowContext context, SerializedBrokeredIdentityContext serializedCtx,
+      BrokeredIdentityContext brokerContext) {
   }
-
 
 }
