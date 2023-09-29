@@ -17,6 +17,6 @@ services:
       - 8081:8080
       - 5005:5005
     volumes:
-      - ./target/keycloak-custom-attribute-idp-linking-2.0.2-SNAPSHOT.jar:/opt/keycloak/providers/keycloak-custom-attribute-idp-linking-2.0.2-SNAPSHOT.jar
+      - ./target/keycloak-custom-attribute-idp-linking-2.1.1-SNAPSHOT.jar:/opt/keycloak/providers/keycloak-custom-attribute-idp-linking-2.1.1-SNAPSHOT.jar
       # if you want to import a realm or some other things
       # - ./import/something.json:/opt/keycloak/data/import/something.json
