@@ -5,6 +5,7 @@ import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.authenticators.broker.IdpAutoLinkAuthenticator;
+import org.keycloak.authentication.authenticators.broker.util.ExistingUserInfo;
 import org.keycloak.authentication.authenticators.broker.util.SerializedBrokeredIdentityContext;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.events.Errors;
@@ -36,6 +37,12 @@ public class CustomAttributeIdpLinkingAuthenticator extends IdpAutoLinkAuthentic
           brokerContext.getIdpConfig().getAlias(), brokerContext.getUsername());
 
       context.setUser(existingUser);
+
+      var shortAttributName = getShortAttributName(config);
+
+      ExistingUserInfo duplication = new ExistingUserInfo(existingUser.getId(), shortAttributName, existingUser.getFirstAttribute(shortAttributName));
+      context.getAuthenticationSession().setAuthNote(EXISTING_USER_INFO, duplication.serialize());
+
       context.success();
     } else {
       if (failOnNoMatch.equals("true")) {
@@ -45,6 +52,14 @@ public class CustomAttributeIdpLinkingAuthenticator extends IdpAutoLinkAuthentic
       context.attempted();
     }
 
+  }
+
+  private static String getShortAttributName(AuthenticatorConfigModel config) {
+    var fullAttributeName = config.getConfig().get(CustomAttributeIdpLinkingAuthenticatorFactory.CONFIG_IDP_ATTRIBUTE);
+    return Optional.of(fullAttributeName)
+            .filter(a -> a.contains("."))
+            .map(a -> a.substring(a.lastIndexOf(".") + 1))
+            .orElse(fullAttributeName);
   }
 
   private AuthenticatorConfigModel validateConfig(AuthenticationFlowContext context) {
